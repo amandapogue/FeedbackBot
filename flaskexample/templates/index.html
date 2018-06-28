@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+
+    <meta property="og:title" content="Feedback Bot" />
+    <meta property="og:description" content="An NLP reply engine designed to help automate responses to weekly student reflections" />
+    <meta property="og:url" content="http://feedbackbot.site" />
+    <meta property="og:image" content="static/img/bg-masthead.jpg" />
+
+    <title>Feedback Bot - An NLP Based Feedback Engine</title>
+    <link rel="icon" type="image/png" href="static/img/robot.png" />
+    <!-- Bootstrap core CSS -->
+    <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom Fonts -->
+    <link href="static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="static/vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="static/css/stylish-portfolio.min.css" rel="stylesheet">
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
+  </head>
+
+
+  <!-- js scripts -->
+  <script type="text/javascript">
+      $(document).ready(function () {
+          $('#customer_question_send_btn').click(function(e) {
+              e.preventDefault();
+
+              var customer_question = $("#customer_question").val();
+              if (customer_question) {
+                  $("#top_left_body").append('<div class="text-info"><b>STUDENT:</b>');
+                  $("#top_left_body").append('<p class="text-info mb-2">' + customer_question + '</p></div>');
+              }
+
+              $.ajax({
+                  url: '/generate_response',
+                  data: $('form').serialize(),
+                  type: 'POST',
+                  success: function(response) {
+                      console.log(response);
+
+                      if (response.count == 0) {
+                          $("#agent_reply_title").html('<div><h5>Please select responses</h5></div>');
+                          $("#agent_reply_radio").html('<div></div>')
+                          // top 4 responses
+                          $.each(response.sent_replies, function (i, item) {
+                              radio_value = '<div class="radio"><label><input type="radio" id="optradio" name="optradio" value="' + item.sent_text + '">' + item.sent_text + '</label></div>';
+                              $("#agent_reply_radio").append(radio_value);
+                            });
+
+                      } else {
+                          $("#agent_reply_title").html('<div><h5>Please select responses</h5></div>');
+                          $("#agent_reply_radio").html('<div></div>')
+                          // top 4 responses
+                          $.each(response.agent_replies, function (i, item) {
+                              radio_value = '<div class="radio"><label><input type="radio" id="optradio" name="optradio" value="' + item.reply_text + '">' + item.reply_text + '</label></div>';
+                              $("#agent_reply_radio").append(radio_value);
+                            });
+                        }
+                  },
+                  error: function(error) {
+                      console.log(error);
+                      // push error msg here
+                  }
+              });
+
+              $("#customer_question").prop('value', '');
+          });
+
+
+          $("#agent_reply_form").on("change","input",function(){
+              var selected_reply = $("input[name='optradio']:checked").val();
+              $("#agent_reply").prop('value', selected_reply);
+          });
+
+
+          $("#agent_reply_btn").click(function() {
+              // show reply msg in chat area
+              var agent_reply = $("#agent_reply").val();
+              if (agent_reply) {
+                  $("#top_left_body").append('<div><b>TEACHER:</b>');
+                  $("#top_left_body").append('<p class="mb-2">' + agent_reply + '</p></div>');
+                  $("#agent_reply_title").html('<div></div>')
+                  $("#agent_reply_radio").html('<div></div>');
+                  $("#agent_reply").prop('value', '');
+              }
+          });
+          
+          
+          $('#customer_question_form').keypress(function(e){
+              var code = e.keyCode || e.which;
+
+              if( code === 13 ) {
+                   e.preventDefault();
+                   $( "#customer_question_send_btn" ).click();
+              };
+          });
+
+
+          $('#agent_reply').keypress(function(e){
+              var code = e.keyCode || e.which;
+
+              if( code === 13 ) {
+                   e.preventDefault();
+                   $( "#agent_reply_btn" ).click();
+              };
+          });
+
+          // scoll to bottom 
+          //$('#top_left_body').animate({
+            //  scrollTop: $('#top_left_body').get(0).scrollHeight}, 500);  
+          //});
+
+          $("#top_left_body").stop().animate({ 
+              scrollTop: $("#top_left_body")[0].scrollHeight}, 100);
+
+      });   
+  </script>
+  <!-- end of js scripts -->
+
+<body id="page-top">
+
+    <!-- Navigation -->
+    <a class="menu-toggle rounded" href="#">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav id="sidebar-wrapper">
+      <ul class="sidebar-nav">
+        <li class="sidebar-brand">
+          <a class="js-scroll-trigger" href="#page-top">FeedbackBot</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a class="js-scroll-trigger" href="#page-top">Home</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a class="js-scroll-trigger" href="#demo">Demo</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a class="js-scroll-trigger" href="#aboutme">About Me</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Header -->
+    <header class="masthead d-flex">
+      <div class="container text-center my-auto">
+        <h1 class="mb-1">Feedback Bot</h1>
+        <h3 class="mb-5">
+          <em>An NLP reply engine designed to help automate responses <br> to weekly student reflections.</em>
+        </h3>
+        <a class="btn btn-primary btn-xl js-scroll-trigger" href="#demo">Try it out!</a>
+      </div>
+      <div class="overlay"></div>
+    </header>
+
+
+    <section class="bg-info" id="demo">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto text-center">
+            <p>
+            <h3 class="section-heading text-white">Please scroll down to try interacting with the 
+            feedback bot!</h3>
+            <hr class="light my-4">
+            <p class="text-faded mb-4">Instruction: first input a reflection on how you think your learning went over the past week, after submitting, see the feedback suggestions provided by the feedback bot.</p>
+          </div>
+        </div>
+        <!-- main content -->
+        <div class="row">
+
+          <!--left panel-->
+          <div class='col-lg-6' id='left_panel' name='left_panel'>
+            <!-- top left -->
+            <div class="card card-primary">
+              <div class="card-header">Reflection Area</div>
+              <div class="card-block col-lg-12" id='top_left_body' name='top_left_body'
+                style="min-height: 450px; max-height: 450px; overflow-y: scroll;"></div>
+            </div>
+            <!-- end of top left -->
+
+            <br>
+            <!-- bottom left -->
+            <div class="form-group">
+              <form class="form-signin" name="customer_question_form" id="customer_question_form" 
+                  action="/index" method="post" role="form">
+                <div class="row">
+                  <div class="form-group col-md-10">
+                    <textarea class="form-control" id="customer_question"
+                      name="customer_question" rows="3"
+                      placeholder="Student: Please reflect on what strategies worked best this week and what you will try next time."></textarea>
+                  </div>
+                  <div class="form-group col-md-2">
+                      <button type="button" id="customer_question_send_btn"
+                          name="customer_question_send_btn" class="btn btn-primary">Send</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- end of bottom left -->
+
+          </div>
+          <!-- end of left panel -->
+
+
+          <!--right panel-->
+          <div class='col-lg-6' id='right_panel' name='right_panel'>
+            <!-- top right -->
+            <div class="card card-primary">
+              <div class="card-header">Feedback Response Engine</div>
+              <div class="card-block" id='top_right_body' name='top_right_body' style="min-height: 450px; max-height: 450px; overflow-y: scroll; font-size: 14px;">
+                <!-- response candidates -->
+                <div class="container">
+                  <!--<h3>Possible Responses</h3>-->
+                  <form name='agent_reply_form' id='agent_reply_form' action="">
+                    <div name="agent_reply_title" id="agent_reply_title"></div>
+                    <div class="radio col-lg-12" name='agent_reply_radio' id='agent_reply_radio'></div>
+                  </form>
+                </div>
+
+
+                <!-- possible topics / tags -->
+                <div class="container" id="question_tags" name="question_tags" style="display: none;">
+                  <div class="row">
+                    <div class="col-md-8"><br><h5>Or suggest following links<h5></div>
+                    <div class="col-md-2"><br>
+                      <button type="button" id="agent_reply_link_btn" name="agent_reply_link_btn"
+                              class="btn btn-primary">Send Links</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="container" id="question_tags_reply" name="question_tags_reply">
+                  
+                </div>
+
+              </div>
+            </div><!-- end of top right -->
+
+            <br>
+            <!-- bottom right -->
+            <div class="form-group">
+              <div class="row">
+                <div class="form-group col-md-10">
+                  <textarea class="form-control" id="agent_reply" name="agent_reply"
+                    rows="3" placeholder="Teacher: please type your reply here."></textarea>
+                </div>
+                <div class="form-group col-md-2">
+                  <button type="button" id="agent_reply_btn" name="agent_reply_btn"
+                    class="btn btn-primary">Reply</button>
+                </div>
+              </div>
+            </div>
+            <!-- end of bottom right -->
+
+          </div>
+          <!-- end of right panel -->
+        </div>
+        <!-- end of main container -->
+
+      </div>
+    </section>
+
+<!--
+    <section id="project">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 text-center">
+            <h2 class="section-heading">About the Project: Comming Soon...</h2>
+            <hr class="my-4">
+          </div>
+        </div>
+      </div>
+    </section>
+-->
+
+    <section id="aboutme">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto text-center">
+            <p>
+            <h2 class="section-heading">About Me</h2>
+            <hr class="my-4">
+            <p class="mb-3">Hi! My name is Amanda Pogue. I am currently a fellow at Insight Data Science. I got my Ph.D. at the University of Rochester in Brain and Cognitive Sciences. I like to explore problems and think of creative solutions, including exploring and visualizing data, experimentation.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 ml-auto text-center">
+            <i class="fa fa-github fa-3x mb-3 sr-contact"></i>
+            <p>
+              <a href="https://github.com/amandapogue">GitHub</a>
+            </p>
+          </div>
+          <div class="col-lg-4 mr-auto text-center">
+            <i class="fa fa-linkedin fa-3x mb-3 sr-contact"></i>
+            <p>
+              <a href="https://www.linkedin.com/in/apogue/">LinkedIn</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="static/vendor/jquery/jquery.min.js"></script>
+    <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="static/js/stylish-portfolio.min.js"></script>
+
+  </body>
+
+</html>
