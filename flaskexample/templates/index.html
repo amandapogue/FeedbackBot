@@ -34,13 +34,13 @@
   <!-- js scripts -->
   <script type="text/javascript">
       $(document).ready(function () {
-          $('#customer_question_send_btn').click(function(e) {
+          $('#student_question_send_btn').click(function(e) {
               e.preventDefault();
 
-              var customer_question = $("#customer_question").val();
-              if (customer_question) {
+              var student_question = $("#student_question").val();
+              if (student_question) {
                   $("#top_left_body").append('<div class="text-info"><b>STUDENT:</b>');
-                  $("#top_left_body").append('<p class="text-info mb-2">' + customer_question + '</p></div>');
+                  $("#top_left_body").append('<p class="text-info mb-2">' + student_question + '</p></div>');
               }
 
               $.ajax({
@@ -51,21 +51,21 @@
                       console.log(response);
 
                       if (response.count == 0) {
-                          $("#agent_reply_title").html('<div><h5>Please select responses</h5></div>');
-                          $("#agent_reply_radio").html('<div></div>')
+                          $("#teacher_reply_title").html('<div><h5>Please select responses</h5></div>');
+                          $("#teacher_reply_radio").html('<div></div>')
                           // top 4 responses
                           $.each(response.sent_replies, function (i, item) {
                               radio_value = '<div class="radio"><label><input type="radio" id="optradio" name="optradio" value="' + item.sent_text + '">' + item.sent_text + '</label></div>';
-                              $("#agent_reply_radio").append(radio_value);
+                              $("#teacher_reply_radio").append(radio_value);
                             });
 
                       } else {
-                          $("#agent_reply_title").html('<div><h5>Please select responses</h5></div>');
-                          $("#agent_reply_radio").html('<div></div>')
+                          $("#teacher_reply_title").html('<div><h5>Please select responses</h5></div>');
+                          $("#teacher_reply_radio").html('<div></div>')
                           // top 4 responses
-                          $.each(response.agent_replies, function (i, item) {
+                          $.each(response.teacher_replies, function (i, item) {
                               radio_value = '<div class="radio"><label><input type="radio" id="optradio" name="optradio" value="' + item.reply_text + '">' + item.reply_text + '</label></div>';
-                              $("#agent_reply_radio").append(radio_value);
+                              $("#teacher_reply_radio").append(radio_value);
                             });
                         }
                   },
@@ -75,45 +75,45 @@
                   }
               });
 
-              $("#customer_question").prop('value', '');
+              $("#student_question").prop('value', '');
           });
 
 
-          $("#agent_reply_form").on("change","input",function(){
+          $("#teacher_reply_form").on("change","input",function(){
               var selected_reply = $("input[name='optradio']:checked").val();
-              $("#agent_reply").prop('value', selected_reply);
+              $("#teacher_reply").prop('value', selected_reply);
           });
 
 
-          $("#agent_reply_btn").click(function() {
+          $("#teacher_reply_btn").click(function() {
               // show reply msg in chat area
-              var agent_reply = $("#agent_reply").val();
-              if (agent_reply) {
+              var teacher_reply = $("#teacher_reply").val();
+              if (teacher_reply) {
                   $("#top_left_body").append('<div><b>TEACHER:</b>');
-                  $("#top_left_body").append('<p class="mb-2">' + agent_reply + '</p></div>');
-                  $("#agent_reply_title").html('<div></div>')
-                  $("#agent_reply_radio").html('<div></div>');
-                  $("#agent_reply").prop('value', '');
+                  $("#top_left_body").append('<p class="mb-2">' + teacher_reply + '</p></div>');
+                  $("#teacher_reply_title").html('<div></div>')
+                  $("#teacher_reply_radio").html('<div></div>');
+                  $("#teacher_reply").prop('value', '');
               }
           });
           
           
-          $('#customer_question_form').keypress(function(e){
+          $('#student_question_form').keypress(function(e){
               var code = e.keyCode || e.which;
 
               if( code === 13 ) {
                    e.preventDefault();
-                   $( "#customer_question_send_btn" ).click();
+                   $( "#student_question_send_btn" ).click();
               };
           });
 
 
-          $('#agent_reply').keypress(function(e){
+          $('#teacher_reply').keypress(function(e){
               var code = e.keyCode || e.which;
 
               if( code === 13 ) {
                    e.preventDefault();
-                   $( "#agent_reply_btn" ).click();
+                   $( "#teacher_reply_btn" ).click();
               };
           });
 
@@ -192,17 +192,17 @@
             <br>
             <!-- bottom left -->
             <div class="form-group">
-              <form class="form-signin" name="customer_question_form" id="customer_question_form" 
+              <form class="form-signin" name="student_question_form" id="student_question_form" 
                   action="/index" method="post" role="form">
                 <div class="row">
                   <div class="form-group col-md-10">
-                    <textarea class="form-control" id="customer_question"
-                      name="customer_question" rows="3"
+                    <textarea class="form-control" id="student_question"
+                      name="student_question" rows="3"
                       placeholder="Student: Please reflect on what strategies worked best this week and what you will try next time."></textarea>
                   </div>
                   <div class="form-group col-md-2">
-                      <button type="button" id="customer_question_send_btn"
-                          name="customer_question_send_btn" class="btn btn-primary">Send</button>
+                      <button type="button" id="student_question_send_btn"
+                          name="student_question_send_btn" class="btn btn-primary">Send</button>
                   </div>
                 </div>
               </form>
@@ -222,9 +222,9 @@
                 <!-- response candidates -->
                 <div class="container">
                   <!--<h3>Possible Responses</h3>-->
-                  <form name='agent_reply_form' id='agent_reply_form' action="">
-                    <div name="agent_reply_title" id="agent_reply_title"></div>
-                    <div class="radio col-lg-12" name='agent_reply_radio' id='agent_reply_radio'></div>
+                  <form name='teacher_reply_form' id='teacher_reply_form' action="">
+                    <div name="teacher_reply_title" id="teacher_reply_title"></div>
+                    <div class="radio col-lg-12" name='teacher_reply_radio' id='teacher_reply_radio'></div>
                   </form>
                 </div>
 
@@ -234,7 +234,7 @@
                   <div class="row">
                     <div class="col-md-8"><br><h5>Or suggest following links<h5></div>
                     <div class="col-md-2"><br>
-                      <button type="button" id="agent_reply_link_btn" name="agent_reply_link_btn"
+                      <button type="button" id="teacher_reply_link_btn" name="teacher_reply_link_btn"
                               class="btn btn-primary">Send Links</button>
                     </div>
                   </div>
@@ -251,11 +251,11 @@
             <div class="form-group">
               <div class="row">
                 <div class="form-group col-md-10">
-                  <textarea class="form-control" id="agent_reply" name="agent_reply"
+                  <textarea class="form-control" id="teacher_reply" name="teacher_reply"
                     rows="3" placeholder="Teacher: please type your reply here."></textarea>
                 </div>
                 <div class="form-group col-md-2">
-                  <button type="button" id="agent_reply_btn" name="agent_reply_btn"
+                  <button type="button" id="teacher_reply_btn" name="teacher_reply_btn"
                     class="btn btn-primary">Reply</button>
                 </div>
               </div>

@@ -25,13 +25,13 @@ def generate_responses(input_question, fasttext_model, train_df, xgboost_model, 
     """ 
     # preprocess input response   
     input_question_proc = nlp_preprocess_text(input_question)
-
+    print(input_question_proc)
     # generate fasttext vector
     input_ff = get_vec(fasttext_model, input_question_proc)
 
     # generate top20 responses's index and cosine value
     top_indices, top_cosine = compare_cos(train_df, input_ff)
-    filtered_reply_text_list, filtered_reply_cosine_list, count = filter_reply_msg(top_indices, top_cosine, 0.16, count_cutoff)
+    filtered_reply_text_list, filtered_reply_cosine_list, count = filter_reply_msg(top_indices, top_cosine, 0.15, count_cutoff)
     # preprocess input response to use in xgboost and get sentiment
     y_input, input_sent = find_features(input_question_proc, input_ff)
 
@@ -60,6 +60,7 @@ def generate_responses(input_question, fasttext_model, train_df, xgboost_model, 
         count = 0
 
     print(top_cosine)
+
     return filtered_reply_text_list, xgboost_reply, sent_reply, count
 
 
@@ -83,6 +84,7 @@ def compare_cos(df, text):
     b= a.argsort()[:top_n]
     top_indices = df.iloc[b].feedback.values[0]
     top_cosine = a[b]
+    print(top_cosine)
     return top_indices, top_cosine
 
 
@@ -113,8 +115,5 @@ def filter_reply_msg(top_indices, top_cosine, cosine_cut_off, count_cutoff):
 
 def xgboost_category(model, df):
     df=df.values
-    label_encoder = LabelEncoder()
-    label_encoder.classes_ = np.load('./flaskexample/file/classes.npy')
     y = model.predict(df)
-    y_val = label_encoder.inverse_transform(y)
-    return y_val[0]
+    return y[0]

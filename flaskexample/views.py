@@ -32,25 +32,25 @@ def index():
 
 @app.route('/generate_response',  methods=['POST'])
 def generate_response():
-    customer_question = request.form['customer_question']
+    student_question = request.form['student_question']
     # generate response by predefined QA
     count_qa = 0
     
     # generate response based on corpus search (ir: information retrival)
-    reply_ft_list, reply_xb_list, reply_sent_list, count_ir = generate_responses(customer_question, fasttext_model, train_df, xgboost_model, 2-count_qa)
+    reply_ft_list, reply_xb_list, reply_sent_list, count_ir = generate_responses(student_question, fasttext_model, train_df, xgboost_model, 2-count_qa)
     
     count = count_qa + count_ir
 
     # generate result
-    if customer_question == "hi" or customer_question == "hello" or customer_question == "hey" or customer_question == "yo":
-        agent_replies = [{'reply_text' : "Hello! Did you forget to put in your reflection? Please take a look at the sample strategies, or feel free to stop by and chat with me about your reflections."},
+    if student_question == "hi" or student_question == "hello" or student_question == "hey" or student_question == "yo":
+        teacher_replies = [{'reply_text' : "Hello! Did you forget to put in your reflection? Please take a look at the sample strategies, or feel free to stop by and chat with me about your reflections."},
         {'reply_text':'Hi! Don’t forget to complete your reflections! Try looking at some of our sample strategies for ideas on what to try.'},
         {'reply_text' : "Reflections help you keep track of the strategies you’ve tried. Try looking at some of our sample strategies for ideas on what to try."}]
     else:
-        agent_replies = [{'reply_text' : reply_ft_list }, {'reply_text': reply_xb_list}, 
+        teacher_replies = [{'reply_text' : reply_ft_list }, {'reply_text': reply_xb_list}, 
         {'reply_text': reply_sent_list[0]},{'reply_text': reply_sent_list[1]}]
     
-    if customer_question == "" or customer_question == " ":
+    if student_question == "" or student_question == " ":
         sent_replies = [{'sent_text' : "Did you forget to put in your reflection? Please take a look at the sample strategies, or feel free to stop by and chat with me about your reflections."},
         {'sent_text':'Don’t forget to complete your reflections! Try looking at some of our sample strategies for ideas on what to try.'},
         {'sent_text' : "Reflections help you keep track of the strategies you’ve tried. Try looking at some of our sample strategies for ideas on what to try."}]
@@ -60,8 +60,8 @@ def generate_response():
         {'sent_text': reply_sent_list[0]},{'sent_text': reply_sent_list[1]}]
 
     ret = {
-        'customer_question': customer_question,
-        'agent_replies': agent_replies,
+        'student_question': student_question,
+        'teacher_replies': teacher_replies,
         'sent_replies': sent_replies,
         'count': count
     }
